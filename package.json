@@ -1,0 +1,27 @@
+{
+  "name": "reportappapi",
+  "private": true,
+  "version": "0.0.1",
+  "description": "a Sails application",
+  "keywords": [],
+  "dependencies": {
+    "cloudinary": "^1.11.0",
+    "include-all": "^1.0.0",
+    "opencage-api-client": "^0.1.0",
+    "rc": "1.0.1",
+    "sails": "~0.12.14",
+    "sails-mongo": "^0.12.2",
+    "skipper": "^0.8.5"
+  },
+  "scripts": {
+    "debug": "node debug app.js",
+    "start": "NODE_ENV=production node app.js"
+  },
+  "engines": {
+    "node": "8.11.1",
+    "npm": "5.6.0"
+  },
+  "main": "app.js",
+  "author": "Dirisu Jesse",
+  "license": "MIT"
+}
