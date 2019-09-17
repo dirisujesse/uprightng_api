@@ -7,7 +7,7 @@
 
 module.exports = {
 	signUp: function (req, res) {
-		User.findOne(function (err, usr) {
+		User.findOne({username: req.param('username')}).exec(function (err, usr) {
 			if (err) {
 				return res.negotiate(err);
 			}
