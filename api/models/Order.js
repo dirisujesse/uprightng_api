@@ -23,6 +23,13 @@ module.exports = {
     EDD: {
       type: "integer",
       required: true
+    },
+    deliveredOn: {
+      type: "datetime"
+    },
+    pickupLocation: {
+      type: "string",
+      defaultsTo: ""
     }
   },
 

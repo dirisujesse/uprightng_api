@@ -64,6 +64,11 @@ module.exports = {
 		points: {
 			type: 'integer',
 			defaultsTo: 0,
+		},
+		password: {
+			type: 'string',
+			unique: true,
+			required: true
 		}
 	}
 };
