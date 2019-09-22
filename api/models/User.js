@@ -69,6 +69,10 @@ module.exports = {
 			type: 'string',
 			unique: true,
 			required: true
+		},
+		isMember: {
+			type: 'boolean',
+			defaultsTo: false
 		}
 	}
 };

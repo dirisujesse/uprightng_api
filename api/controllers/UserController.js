@@ -7,7 +7,7 @@
 
 module.exports = {
 	signUp: function (req, res) {
-		User.findOne({username: req.param('username')}).exec(function (err, usr) {
+		User.findOne({ username: req.param('username') }).exec(function (err, usr) {
 			if (err) {
 				return res.negotiate(err);
 			}
@@ -37,14 +37,32 @@ module.exports = {
 		})
 	},
 	updateProfile: function (req, res) {
-		User
-			.update(req.param('id'), {
-				name: req.param('name'),
-				email: req.param('email'),
-				city: req.param('city'),
-				state: req.param('state'),
-				country: req.param('country')
-			})
+		var body = req.body;
+		delete body.id;
+		if (body.isImg) {
+			var Service = S3Service.upload(body.avatar || '', `${data.name}_${new Date().valueOf()}`);
+			Service
+				.then(function (url) {
+					var user_ = Object.assign(body, {avatar: url || 'https://www.gravatar.com/avatar'})
+					User
+					.update(req.param('id'), user_)
+					.exec(function (err, user) {
+						if (err) {
+							return res.negotiate(err);
+						}
+						if (!user) {
+							return res.negotiate('not found');
+						}
+						if (user) {
+							return res.json(user);
+						}
+					})
+				}).catch(function (err) {
+					return res.badRequest();
+				})
+		} else {
+			User
+			.update(req.param('id'), body)
 			.exec(function (err, user) {
 				if (err) {
 					return res.negotiate(err);
@@ -56,6 +74,8 @@ module.exports = {
 					return res.json(user);
 				}
 			});
+		}
+		
 	},
 	getUser: function (req, res) {
 		User
@@ -122,7 +142,7 @@ module.exports = {
 								comments: count,
 								upvotes: upvotes,
 								downvotes: downvotes,
-								posts: postsLen
+								posts: postsLen,
 							})
 							return res.json({
 								comments: count,
