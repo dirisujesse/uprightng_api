@@ -38,9 +38,8 @@ module.exports = {
 	},
 	updateProfile: function (req, res) {
 		var body = req.body;
-		delete body.id;
 		if (body.isImg) {
-			var Service = S3Service.upload(body.avatar || '', `${data.name}_${new Date().valueOf()}`);
+			var Service = S3Service.upload(body.avatar || '', `${body.name}_${new Date().valueOf()}`);
 			Service
 				.then(function (url) {
 					var user_ = Object.assign(body, {avatar: url || 'https://www.gravatar.com/avatar'})
