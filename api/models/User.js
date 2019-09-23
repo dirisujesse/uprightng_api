@@ -31,7 +31,7 @@ module.exports = {
 		},
 		avatar: {
 			type: 'string',
-			defaultsTo: 'https://www.gravatar.com/avatar'
+			defaultsTo: 'https://res.cloudinary.com/jesse-dirisu/image/upload/v1569184517/Mask_Group_4_A12_Group_18_pattern.png'
 		},
 		posts: {
 			collection: 'post',
