@@ -58,6 +58,9 @@ module.exports = {
 			type: 'string',
 			email: true
 		},
+		gender: {
+			type: 'string',
+		},
 		telephone: {
 			type: 'string',
 		},
