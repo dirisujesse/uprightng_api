@@ -64,6 +64,11 @@ module.exports = {
 		hasVideo: {
 			type: 'boolean'
 		}
+	},
+	afterDestroy: function (instance, cb) {
+		User.findUserandDecPostCount(instance[0].author, function(err, data) {
+			return cb();
+		})
 	}
 };
 

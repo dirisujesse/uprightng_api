@@ -26,7 +26,14 @@ module.exports = {
                             return res.notFound();
                         }
                         if (testimonial) {
-                            return res.json(testimonial);
+                            User.findUserandIncPoints({user: req.param('author'), points: 2}, function(err, data) {
+                                if (err) {
+                                    return res.json(testimonial);
+                                } else {
+                                    testimonial = Object.assign(testimonial, {"author": data});
+                                    return res.json(testimonial);
+                                }
+                              });
                         }
                     });
             }).catch(function (err) {

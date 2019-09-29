@@ -24,22 +24,14 @@ module.exports = {
 		  	return res.badRequest(); 
 		  }
 		  if (comment) {
-		  	Comments
-			.findOne({
-				id: comment.id,
-			})
-			.populate('author')
-			.exec(function (err, comment){
-			  if (err) { 
-			  	return res.negotiate(err); 
-			  }
-			  if (!comment) {
-			  	return res.negotiate(); 
-			  }
-			  if (comment) {
-			  	return res.json(comment);
-			  }
-			});
+			User.findUserandIncPoints({user: req.param('author'), points: 1}, function(err, data) {
+				if (err) {
+					return res.json(comment);
+				} else {
+					comment = Object.assign(comment, {"author": data});
+					return res.json(comment);
+				}
+			  });
 		  }
 		});
 	},

@@ -7,7 +7,6 @@
 module.exports = {
 	postevents: function(req, res) {
 		if (req.isSocket) {
-			console.log('yippee');
 			Post.subscribe(req, 'postadded');
 			return res.ok()
 		} else {
@@ -49,112 +48,18 @@ module.exports = {
 				  	return res.notFound(); 
 				  }
 				  if (post) {
-				  	Post
-					.findOne({
-						id: post.id,
-					})
-					.populate('author')
-					.exec(function (err, post){
-					  if (err) { 
-					  	return res.negotiate(err); 
-					  }
-					  if (!post) {
-					  	return res.negotiate(); 
-					  }
-					  if (post) {
-					  	Post.count({ author: req.param('author') })
-					  	.exec(function (err, count) {
-					  	  if (err) {
-					  	    return;
-					  	  }
-					  	  if (!count) {
-					  	    return;
-					  	  }
-					  	  if (count) {
-					  	  	User.update(req.param('author'), {postCount: count})
-					  	  	.exec(function(err, updated){
-					  	  	  if (err) {
-					  	  	  	console.log(err);
-					  	  	    return;
-					  	  	  }
-					  	  	  if (updated) {
-					  	  	  	console.dir(updated)
-					  	  	  }
-					  	  	});
-					  	  }
-					  	});
-					  	return res.json(post);
-					  }
-					});
+					User.findUserandIncPoints({user: req.param('author'), points: 2, isNewPost: true}, function(err, data) {
+						if (err) {
+							return res.json(post);
+						} else {
+							post = Object.assign(post, {"author": data});
+							return res.json(post);
+						}
+					  });
 				  }
 				});
 			}).catch(function(err) {
-				console.log(err);
-				Post.create({
-					upvotes: 0,
-					downvotes: 0,
-					title: req.param('title'),
-					body: req.param('body'),
-					author: req.param('author'),
-					time:  new Date().toUTCString().replace("GMT", "").trim(),
-					loc: loc,
-					lat: req.param('lat') || 0,
-					long: req.param('long') || 0,
-					image: 'https://res.cloudinary.com/jesse-dirisu/image/upload/v1530355817/Logo.jpg',
-					anonymous: req.param('anonymous'),
-					from_twitter: req.param('from_twitter') || false,
-					urls: req.param('urls'),
-					featured: req.param('featured') || false,
-					hasVideo: false
-				})
-				.exec(function (err, post){
-				  if (err) { 
-				  	return res.negotiate(err); 
-				  }
-				  if (!post) {
-				  	return res.notFound(); 
-				  }
-				  if (post) {
-				  	Post
-					.findOne({
-						id: post.id,
-					})
-					.populate('author')
-					.exec(function (err, post){
-					  if (err) { 
-					  	return res.negotiate(err); 
-					  }
-					  if (!post) {
-					  	return res.negotiate(); 
-					  }
-					  if (post) {
-					  	Post.count({ author: req.param('author') })
-					  	.exec(function (err, count) {
-					  	  if (err) {
-					  	    return;
-					  	  }
-					  	  if (!count) {
-					  	    return;
-					  	  }
-					  	  if (count) {
-					  	  	User.update(req.param('author'), {postCount: count})
-					  	  	.exec(function(err, updated){
-					  	  	  if (err) {
-					  	  	  	console.log(err);
-					  	  	    return;
-					  	  	  }
-					  	  	  if (updated) {
-					  	  	  	console.dir(updated)
-					  	  	  }
-					  	  	});
-					  	  }
-					  	});
-					  	Post.publishUpdate('postadded', post);
-					  	return res.json(post);
-					  }
-					});
-				  }
-				});
+				return res.negotiate(err);
 			})
 		})
 	},

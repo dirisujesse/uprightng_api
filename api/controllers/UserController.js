@@ -17,6 +17,7 @@ module.exports = {
 						name: req.param('name'),
 						username: req.param('username'),
 						password: req.param('password'),
+						isMember: req.param('isMember'),
 						postCount: 0
 					})
 					.exec(function (err, user) {
@@ -42,39 +43,49 @@ module.exports = {
 			var Service = S3Service.upload(body.avatar || '', `${body.name}_${new Date().valueOf()}`);
 			Service
 				.then(function (url) {
-					var user_ = Object.assign(body, {avatar: url || 'https://res.cloudinary.com/jesse-dirisu/image/upload/v1569184517/Mask_Group_4_A12_Group_18_pattern.png'})
+					var user_ = Object.assign(body, { avatar: url || 'https://res.cloudinary.com/jesse-dirisu/image/upload/v1569184517/Mask_Group_4_A12_Group_18_pattern.png' })
 					User
-					.update(req.param('id'), user_)
-					.exec(function (err, user) {
-						if (err) {
-							return res.negotiate(err);
-						}
-						if (!user) {
-							return res.negotiate('not found');
-						}
-						if (user) {
-							return res.json(user);
-						}
-					})
+						.update(req.param('id'), user_)
+						.exec(function (err, user) {
+							if (err) {
+								return res.negotiate(err);
+							}
+							if (!user) {
+								return res.negotiate('not found');
+							}
+							if (user) {
+								return res.json(user);
+							}
+						})
 				}).catch(function (err) {
 					return res.badRequest();
 				})
 		} else {
 			User
-			.update(req.param('id'), body)
-			.exec(function (err, user) {
-				if (err) {
-					return res.negotiate(err);
-				}
-				if (!user) {
-					return res.negotiate('not found');
-				}
-				if (user) {
-					return res.json(user);
-				}
-			});
+				.update(req.param('id'), body)
+				.exec(function (err, user) {
+					if (err) {
+						return res.negotiate(err);
+					}
+					if (!user) {
+						return res.negotiate('not found');
+					}
+					if (user) {
+						if (body.isMembership) {
+							User.findUserandIncPoints({ user: req.param('id'), points: 5, }, function (err, data) {
+								if (err) {
+									return res.json(user);
+								} else {
+									return res.json(data);
+								}
+							});
+						} else {
+
+						}
+					}
+				});
 		}
-		
+
 	},
 	getUser: function (req, res) {
 		User
@@ -97,6 +108,7 @@ module.exports = {
 		User
 			.find()
 			.where({ 'name': { '!': 'Anonymous User' }, 'postCount': { '>': 0 } })
+			.sort('points DESC')
 			.sort('postCount DESC')
 			.limit(10)
 			.exec(function (err, users) {
@@ -115,50 +127,20 @@ module.exports = {
 			});
 	},
 	getUserStat: function (req, res) {
-		console.log(req.param('id'));
-		Post
-			.find({
-				author: req.param('id'),
-			})
-			.exec(function (err, posts) {
+		User.findOne({ id: req.param('id') })
+			.populate("comments", { limit: 0 })
+			.exec(function (err, user) {
 				if (err) {
 					return res.negotiate(err);
 				}
-				if (!posts) {
+				if (!user) {
 					return res.negotiate('not found');
 				}
-				if (posts) {
-					var upvotes = posts.length > 0 ? posts.map(post => post.upvotes).reduce((prev, next) => prev + next) : 0;
-					var downvotes = posts.length > 0 ? posts.map(post => post.downvotes).reduce((prev, next) => prev + next) : 0;
-					var postsLen = posts.length;
-					Comments.count({ author: req.param('id') }).exec(function (error, count) {
-						if (error) {
-							return res.negotiate(err);
-						}
-
-						if (count) {
-							console.dir({
-								comments: count,
-								upvotes: upvotes,
-								downvotes: downvotes,
-								posts: postsLen,
-							})
-							return res.json({
-								comments: count,
-								upvotes: upvotes,
-								downvotes: downvotes,
-								posts: postsLen
-							});
-						}
-
-						if (!count) {
-							return res.json({
-								comments: 0,
-								upvotes: upvotes,
-								downvotes: downvotes,
-								posts: postsLen
-							});
-						}
+				if (user) {
+					return res.json({
+						comments: user.comments ? user.comments.length : 0,
+						points: user.points,
+						posts: user.postCount,
 					});
 				}
 			});

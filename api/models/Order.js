@@ -32,6 +32,19 @@ module.exports = {
       defaultsTo: ""
     }
   },
-
+  afterCreate: function(instance, cb) {
+    Order.findOne({id: instance.id})
+      .populate('product')
+      .exec(function(err, order) {
+        if (order) {
+          User.findUserandDecPoints({user: instance.purchaser, points: order.product.points}, function(err, data) {
+            instance.purchaser = data ? data : instance.purchaser;
+            return cb();
+          })
+        } else {
+          return cb();
+        }
+      })
+  },
 };
 
