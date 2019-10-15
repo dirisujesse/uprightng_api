@@ -18,6 +18,14 @@
  * For more information on configuration, check out:
  * http://sailsjs.org/#!/documentation/reference/sails.config/sails.config.connections.html
  */
+const {
+  MONGO_USERNAME,
+  MONGO_PASSWORD,
+  MONGO_HOSTNAME,
+  MONGO_PORT,
+  MONGO_DB,
+  MONGO_REPLICASET
+} = process.env;
 
 module.exports.connections = {
 
@@ -80,7 +88,8 @@ module.exports.connections = {
 
   ProdMongoServer: {
     adapter: 'sails-mongo',
-    url: process.env.MONGODB_URI
+    url:`mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB}?replicaSet=${MONGO_REPLICASET}&authSource=admin`
+    //url: process.env.MONGODB_URI
   },
 
 
