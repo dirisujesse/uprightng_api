@@ -45,6 +45,14 @@ module.exports = {
 			type: 'boolean',
 			defaultsTo: false
 		},
+		approved: {
+			type: 'boolean',
+			defaultsTo: false
+		},
+		flagged: {
+			type: 'boolean',
+			defaultsTo: false
+		},
 		author: {
 			model: 'user'
 		},

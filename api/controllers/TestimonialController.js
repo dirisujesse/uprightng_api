@@ -40,5 +40,27 @@ module.exports = {
                 return res.badRequest();
             })
     },
+    testimonialStats: function(req, res) {
+        Testimonial.find()
+            .sort('name ASC')
+            .populate('author')
+            .exec(function(err, testimonials) {
+                if (err) {
+                    return res.negotiate(err);
+                }
+                if (!testimonials) {
+                    return res.json({
+                        testimonials: [],
+                        contributors: 0,
+                    })
+                }
+                if (testimonials) {
+                    return res.json({
+                        testimonials: testimonials,
+                        contributors: testimonials.length ? Array.from(new Set(testimonials.map(it => it.author.id))).length : 0,
+                    })
+                }
+            })
+    }
 };
 
