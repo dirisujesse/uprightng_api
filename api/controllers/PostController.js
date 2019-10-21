@@ -89,7 +89,7 @@ module.exports = {
 	},
 	getPosts: function(req, res) {
 		Post
-			.find()
+			.find({approved: true})
 			.sort("createdAt DESC")
 			.limit(50)
 			.populate('author')
@@ -107,7 +107,7 @@ module.exports = {
 	},
 	getRecPosts: function(req, res) {
 		Post
-			.find()
+			.find({approved: true})
 			.sort("createdAt DESC")
 			.where({
 				'createdAt': {
@@ -130,7 +130,7 @@ module.exports = {
 	},
 	getTrendingPosts: function(req, res) {
 		Post
-			.find()
+			.find({approved: true})
 			.where({
 				upvotes: {
 					'>': 0
@@ -154,7 +154,7 @@ module.exports = {
 	},
 	getFeaturedPosts: function(req, res) {
 		Post
-			.find()
+			.find({"approved": true})
 			.where({
 				featured: true
 			})
