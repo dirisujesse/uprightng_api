@@ -17,7 +17,7 @@ function getDays(date) {
 
 function sumByDay(data) {
 	data = data.length ? data.map(it => Object.assign(it, {
-		day: new Date(it.createdAt).toLocaleDateString()
+		day: new Date(it.createdAt).toDateString()
 	})) : [];
 	if (!data.length) {
 		return {
@@ -25,7 +25,7 @@ function sumByDay(data) {
 			count: Array(days.length).fill(0)
 		}
 	}
-	const count = days.map(it => data.filter(item => new Date(item.day).toLocaleDateString() === new Date(it).toLocaleDateString()).length)
+	const count = days.map(it => data.filter(item => new Date(item.day).toDateString() === new Date(it).toDateString()).length)
 	return {
 		days: days,
 		count: count
