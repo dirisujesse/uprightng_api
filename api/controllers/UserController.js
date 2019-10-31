@@ -107,9 +107,14 @@ module.exports = {
 			var Service = S3Service.upload(body.avatar || '', `${body.name}_${new Date().valueOf()}`);
 			Service
 				.then(function(url) {
-					var user_ = Object.assign(body, {
-						avatar: url || 'https://res.cloudinary.com/jesse-dirisu/image/upload/v1569184517/Mask_Group_4_A12_Group_18_pattern.png'
-					})
+					delete data.avatar;
+					var user_ = data;
+					if (url) {
+						user_ = Object.assign(body, {
+							avatar: url
+						})
+					}
+
 					User
 						.update(req.param('id'), user_)
 						.exec(function(err, user) {
@@ -149,7 +154,7 @@ module.exports = {
 								}
 							});
 						} else {
-
+							return res.json(user);
 						}
 					}
 				});
