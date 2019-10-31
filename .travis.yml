@@ -1,0 +1,14 @@
+sudo: required
+
+services:
+  - docker
+
+branches:
+  only:
+    - master
+
+script:
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker build -t $DOCKER_USERNAME/upright .
+  - docker images
+  - docker push $DOCKER_USERNAME/upright
